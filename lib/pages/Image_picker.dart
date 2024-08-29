@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:gallery_picker/gallery_picker.dart';
+
+import '../utils/image_pick.dart';
 
 class ImagePickerScreen extends StatefulWidget {
   const ImagePickerScreen({super.key});
@@ -13,6 +14,19 @@ class ImagePickerScreen extends StatefulWidget {
 class _ImagePickerScreenState extends State<ImagePickerScreen> {
   File? selectedMedia;
   bool _isLoading = false;
+
+  void _selectImage() async {
+    final res = await imagePick().catchError((e) {
+      debugPrint(e.toString());
+      return null;
+    });
+
+    if (res != null) {
+      selectedMedia = File(res.path);
+      _isLoading = false;
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,27 +41,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
           setState(() {
             _isLoading = true;
           });
-          try {
-            List<MediaFile>? media = await GalleryPicker.pickMedia(
-                context: context, singleMedia: true);
-            if (media != null && media.isNotEmpty) {
-              var data = await media.first.getFile();
-              if (data != null) {
-                setState(() {
-                  selectedMedia = data;
-                });
-              }
-            }
-          } catch (e) {
-            // Handle any errors here
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to pick image: $e')),
-            );
-          } finally {
-            setState(() {
-              _isLoading = false;
-            });
-          }
+          _selectImage();
         },
         child: const Icon(Icons.add),
       ),
@@ -61,7 +55,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (_isLoading)
-          const CircularProgressIndicator()
+          const Center(child: CircularProgressIndicator())
         else
           _imageView(),
       ],

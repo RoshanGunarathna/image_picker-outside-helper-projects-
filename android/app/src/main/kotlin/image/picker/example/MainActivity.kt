@@ -1,4 +1,4 @@
-package com.example.image_picker
+package image.picker.example
 
 import io.flutter.embedding.android.FlutterActivity
 

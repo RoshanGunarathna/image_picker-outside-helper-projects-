@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/pages/Image_picker.dart';
 
+import 'pages/Image_picker.dart';
 
 void main() {
   runApp(const MyApp());
